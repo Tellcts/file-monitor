@@ -53,17 +53,17 @@ tests/
 
 ## 依赖库及用途
 
-| Crate | 用途 | 关键特性 |
-|-------|------|----------|
-| `clap` 4 | CLI 参数解析 | `derive` 宏自动生成子命令解析 |
-| `serde` + `toml` | 配置文件解析 | `Deserialize` 派生宏将 TOML 自动映射到 Rust 结构体 |
-| `serde_json` | 基线文件持久化 | 将 `HashMap<PathBuf, FileRecord>` 序列化为 JSON |
-| `sha2` + `hex` | SHA-256 哈希 | 计算文件内容摘要，hex 编码为 64 位十六进制字符串 |
-| `lettre` 0.11 | SMTP 邮件发送 | `rustls-tls`（纯 Rust TLS）、`tokio1` 异步传输、`builder` 构建邮件 |
-| `chrono` | 时间戳 | `DateTime<Utc>` 记录变更时间，邮件中转为北京时间显示 |
-| `log` + `env_logger` | 日志 | `log` 门面宏 + `env_logger` 输出到 stderr，支持 INFO/DEBUG 级别 |
-| `ctrlc` 3 | 信号处理 | 捕获 SIGTERM/SIGINT，设置 `AtomicBool` 标志优雅退出 |
-| `tokio` 1 | 异步运行时 | `current_thread` 运行时桥接 lettre 的异步 SMTP 发送 |
+| Crate                | 用途           | 关键特性                                                           |
+| -------------------- | -------------- | ------------------------------------------------------------------ |
+| `clap` 4             | CLI 参数解析   | `derive` 宏自动生成子命令解析                                      |
+| `serde` + `toml`     | 配置文件解析   | `Deserialize` 派生宏将 TOML 自动映射到 Rust 结构体                 |
+| `serde_json`         | 基线文件持久化 | 将 `HashMap<PathBuf, FileRecord>` 序列化为 JSON                    |
+| `sha2` + `hex`       | SHA-256 哈希   | 计算文件内容摘要，hex 编码为 64 位十六进制字符串                   |
+| `lettre` 0.11        | SMTP 邮件发送  | `rustls-tls`（纯 Rust TLS）、`tokio1` 异步传输、`builder` 构建邮件 |
+| `chrono`             | 时间戳         | `DateTime<Utc>` 记录变更时间，邮件中转为北京时间显示               |
+| `log` + `env_logger` | 日志           | `log` 门面宏 + `env_logger` 输出到 stderr，支持 INFO/DEBUG 级别    |
+| `ctrlc` 3            | 信号处理       | 捕获 SIGTERM/SIGINT，设置 `AtomicBool` 标志优雅退出                |
+| `tokio` 1            | 异步运行时     | `current_thread` 运行时桥接 lettre 的异步 SMTP 发送                |
 
 ## 配置文件
 
@@ -116,24 +116,6 @@ HTML 格式邮件，包含纯文本降级。启动、告警、退出三种邮件
 drwx------  .file_monitor/          # 700
 -rw-------  .file_monitor/config.toml  # 600
 -rw-------  .file_monitor/store.json   # 600
-```
-
-### systemd 部署（推荐）
-
-```bash
-# 1. 创建专用用户
-sudo useradd -r -s /sbin/nologin filemon
-sudo chown -R filemon:filemon ~/.file_monitor
-
-# 2. 安装服务
-sudo cp file-monitor.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable file-monitor   # 开机自启
-sudo systemctl start file-monitor    # 立即启动
-
-# 3. 查看状态和日志
-sudo systemctl status file-monitor
-sudo journalctl -u file-monitor -f
 ```
 
 ## 构建要求
