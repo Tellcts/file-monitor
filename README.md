@@ -37,6 +37,34 @@ file_monitor run
 | `file_monitor run`                       | 启动守护进程                                   |
 | `file_monitor run -v`                    | 启动（详细日志）                               |
 
+## 项目结构
+
+```
+src/
+├── main.rs      # CLI 入口、子命令路由、轮询主循环、信号处理
+├── config.rs    # TOML 配置解析（SmtpConfig, NotificationConfig, MonitorConfig）
+├── store.rs     # 哈希基线 JSON 持久化（FileRecord: hash + mtime + size）
+├── monitor.rs   # 文件扫描、mtime+size 快速筛选、SHA-256 哈希、变化比对
+├── mailer.rs    # SMTP 邮件发送（lettre）、HTML 邮件模板
+└── lib.rs       # 库根节点，供集成测试引用
+tests/
+└── integration_test.rs  # 完整流程集成测试
+```
+
+## 依赖库及用途
+
+| Crate | 用途 | 关键特性 |
+|-------|------|----------|
+| `clap` 4 | CLI 参数解析 | `derive` 宏自动生成子命令解析 |
+| `serde` + `toml` | 配置文件解析 | `Deserialize` 派生宏将 TOML 自动映射到 Rust 结构体 |
+| `serde_json` | 基线文件持久化 | 将 `HashMap<PathBuf, FileRecord>` 序列化为 JSON |
+| `sha2` + `hex` | SHA-256 哈希 | 计算文件内容摘要，hex 编码为 64 位十六进制字符串 |
+| `lettre` 0.11 | SMTP 邮件发送 | `rustls-tls`（纯 Rust TLS）、`tokio1` 异步传输、`builder` 构建邮件 |
+| `chrono` | 时间戳 | `DateTime<Utc>` 记录变更时间，邮件中转为北京时间显示 |
+| `log` + `env_logger` | 日志 | `log` 门面宏 + `env_logger` 输出到 stderr，支持 INFO/DEBUG 级别 |
+| `ctrlc` 3 | 信号处理 | 捕获 SIGTERM/SIGINT，设置 `AtomicBool` 标志优雅退出 |
+| `tokio` 1 | 异步运行时 | `current_thread` 运行时桥接 lettre 的异步 SMTP 发送 |
+
 ## 配置文件
 
 `~/.file_monitor/config.toml`：
