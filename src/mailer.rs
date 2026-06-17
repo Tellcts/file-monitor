@@ -3,6 +3,7 @@ use crate::monitor::{ChangeType, FileChange};
 use lettre::{
     message::Mailbox,
     transport::smtp::authentication::Credentials,
+    transport::smtp::client::{Tls, TlsParameters},
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
 };
 use std::path::PathBuf;
@@ -77,7 +78,9 @@ impl Mailer {
             .notification
             .to
             .iter()
-            .filter_map(|addr| addr.parse().ok())
+            .map(|addr| addr.parse::<Mailbox>())
+            .inspect(|r| if let Err(e) = r { log::warn!("无效的收件人地址: {}", e); })
+            .filter_map(|r| r.ok())
             .collect();
 
         if to_addresses.is_empty() {
@@ -101,10 +104,16 @@ impl Mailer {
             self.smtp.auth_code.clone(),
         );
 
+        let tls_params = TlsParameters::builder(self.smtp.host.clone())
+            .dangerous_accept_invalid_certs(true)
+            .build()
+            .map_err(|e| format!("TLS 参数配置失败: {}", e))?;
+
         let mailer: AsyncSmtpTransport<Tokio1Executor> =
             AsyncSmtpTransport::<Tokio1Executor>::builder_dangerous(&self.smtp.host)
                 .port(self.smtp.port)
                 .credentials(creds)
+                .tls(Tls::Wrapper(tls_params))
                 .build();
 
         mailer
