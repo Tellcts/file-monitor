@@ -24,8 +24,8 @@ fn test_full_monitor_pipeline() {
         .expect("save baseline should succeed");
 
     // Reload and verify
-    let loaded = file_monitor::store::load_baseline(&store_path)
-        .expect("load baseline should succeed");
+    let loaded =
+        file_monitor::store::load_baseline(&store_path).expect("load baseline should succeed");
     assert_eq!(loaded.len(), 2);
     assert!(loaded.contains_key(&file_a));
     assert!(loaded.contains_key(&file_b));
@@ -36,8 +36,7 @@ fn test_full_monitor_pipeline() {
 
     // --- Phase 3: Modify file_a → detected ---
     std::fs::write(&file_a, b"content A modified").unwrap();
-    let (changes, new_baseline) =
-        file_monitor::monitor::scan_and_compare(&file_paths, &loaded);
+    let (changes, new_baseline) = file_monitor::monitor::scan_and_compare(&file_paths, &loaded);
 
     assert_eq!(changes.len(), 1);
     assert_eq!(changes[0].path, file_a);
@@ -63,8 +62,7 @@ fn test_full_monitor_pipeline() {
 
     // --- Phase 4: Delete file_b → detected ---
     std::fs::remove_file(&file_b).unwrap();
-    let (changes, final_baseline) =
-        file_monitor::monitor::scan_and_compare(&file_paths, &reloaded);
+    let (changes, final_baseline) = file_monitor::monitor::scan_and_compare(&file_paths, &reloaded);
 
     assert_eq!(changes.len(), 1);
     assert_eq!(changes[0].path, file_b);
@@ -78,5 +76,8 @@ fn test_full_monitor_pipeline() {
     // --- Phase 5: store.json corruption recovery ---
     std::fs::write(&store_path, "garbage {{{").unwrap();
     let recovered = file_monitor::store::load_baseline(&store_path).unwrap();
-    assert!(recovered.is_empty(), "corrupted baseline should return empty");
+    assert!(
+        recovered.is_empty(),
+        "corrupted baseline should return empty"
+    );
 }

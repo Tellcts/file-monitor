@@ -193,7 +193,10 @@ mod tests {
         assert_eq!(baseline.len(), 2);
         assert!(baseline.get(&f1).is_some());
         assert!(baseline.get(&f2).is_some());
-        assert_ne!(baseline.get(&f1).unwrap().hash, baseline.get(&f2).unwrap().hash);
+        assert_ne!(
+            baseline.get(&f1).unwrap().hash,
+            baseline.get(&f2).unwrap().hash
+        );
     }
 
     #[test]
@@ -210,7 +213,7 @@ mod tests {
 
         std::fs::write(&file, b"modified").unwrap();
 
-        let (changes, new_baseline) = scan_and_compare(&[file.clone()], &old_baseline);
+        let (changes, _) = scan_and_compare(&[file.clone()], &old_baseline);
         assert_eq!(changes.len(), 1);
         assert!(matches!(changes[0].change_type, ChangeType::Modified));
         assert_eq!(changes[0].old_hash, old_hash);

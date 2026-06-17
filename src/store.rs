@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::os::unix::fs::PermissionsExt;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -33,6 +34,9 @@ pub fn save_baseline(
     }
     let json = serde_json::to_string_pretty(data)?;
     std::fs::write(path, json)?;
+    // Set secure permission: owner read/write only
+    let perm = std::fs::Permissions::from_mode(0o600);
+    let _ = std::fs::set_permissions(path, perm);
     Ok(())
 }
 
