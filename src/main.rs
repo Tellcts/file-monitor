@@ -1,7 +1,4 @@
-mod config;
-mod mailer;
-mod monitor;
-mod store;
+use file_monitor::{config, mailer, monitor, store};
 
 use clap::Parser;
 use std::path::PathBuf;

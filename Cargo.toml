@@ -3,6 +3,9 @@ name = "file_monitor"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+name = "file_monitor"
+
 [dependencies]
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
