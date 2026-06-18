@@ -2,6 +2,10 @@
 
 文件完整性校验守护进程 — 定时轮询指定文件，SHA-256 哈希比对，变化时通过 QQ 邮箱 SMTP 发送 HTML 告警邮件。
 
+> [!warning]
+> 由于程序依赖于 `Unix` 模块，仅支持 `Unix-like` 系统，
+> Windows 暂不支持
+
 ## 安装
 
 ```bash
