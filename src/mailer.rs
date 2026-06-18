@@ -1,10 +1,10 @@
 use crate::config::{NotificationConfig, SmtpConfig};
 use crate::monitor::{ChangeType, FileChange};
 use lettre::{
+    AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     message::{Mailbox, MultiPart, SinglePart, header::ContentType},
     transport::smtp::authentication::Credentials,
     transport::smtp::client::{Tls, TlsParameters},
-    AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
 };
 use std::path::PathBuf;
 
@@ -74,14 +74,8 @@ impl Mailer {
     /// Build a card row for a single file change.
     fn change_card(c: &FileChange) -> String {
         let (badge_html, icon) = match c.change_type {
-            ChangeType::Modified => (
-                Self::status_badge("已修改", "#b45309", "#fef3c7"),
-                "⚠️",
-            ),
-            ChangeType::Deleted => (
-                Self::status_badge("已删除", "#dc2626", "#fee2e2"),
-                "🗑",
-            ),
+            ChangeType::Modified => (Self::status_badge("已修改", "#b45309", "#fef3c7"), "⚠️"),
+            ChangeType::Deleted => (Self::status_badge("已删除", "#dc2626", "#fee2e2"), "🗑"),
         };
 
         let hash_section = match c.change_type {
@@ -186,11 +180,7 @@ impl Mailer {
             rows = rows
         );
 
-        let html = Self::html_shell(
-            "监控已启动",
-            &content,
-            "✓ ONLINE",
-        );
+        let html = Self::html_shell("监控已启动", &content, "✓ ONLINE");
 
         (subject, html)
     }
@@ -241,15 +231,9 @@ impl Mailer {
         self.send_email(&subject, &text, &html).await
     }
 
-    pub async fn send_shutdown_report(
-        &self,
-        file_count: usize,
-    ) -> Result<(), String> {
+    pub async fn send_shutdown_report(&self, file_count: usize) -> Result<(), String> {
         let now = Self::fmt_beijing(&chrono::Utc::now());
-        let subject = format!(
-            "{} 监控已停止",
-            self.notification.subject_prefix
-        );
+        let subject = format!("{} 监控已停止", self.notification.subject_prefix);
 
         let text = format!(
             "监控已停止。\n监控文件数: {}\n停止时间: {}\n",
@@ -446,9 +430,7 @@ mod tests {
 
     #[test]
     fn test_startup_text_contains_file_list() {
-        let files = vec![
-            (PathBuf::from("/etc/x"), "hashX".into()),
-        ];
+        let files = vec![(PathBuf::from("/etc/x"), "hashX".into())];
         let text = Mailer::build_startup_text(&files);
         assert!(text.contains("/etc/x"));
         assert!(text.contains("hashX"));

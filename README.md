@@ -10,36 +10,36 @@
 
 ```bash
 cargo build --release
-sudo cp target/release/file_monitor /usr/local/bin/
+sudo cp target/release/fm /usr/local/bin/
 ```
 
 ## 快速开始
 
 ```bash
 # 1. 初始化配置
-file_monitor init
+fm init
 
 # 2. 编辑配置（填入邮箱授权码）
 vim ~/.file_monitor/config.toml
 
 # 3. 启动
-file_monitor run
+fm run
 ```
 
 ## 命令一览
 
-| 命令                                     | 说明                                           |
-| ---------------------------------------- | ---------------------------------------------- |
-| `file_monitor init`                      | 生成配置文件模板 `~/.file_monitor/config.toml` |
-| `file_monitor add -r "email"`            | 添加收件人                                     |
-| `file_monitor add -f "/path/to/file"`    | 添加监控文件                                   |
-| `file_monitor remove -r "email"`         | 移除收件人                                     |
-| `file_monitor remove -f "/path/to/file"` | 移除监控文件                                   |
-| `file_monitor interval 60`               | 设置轮询间隔（秒）                             |
-| `file_monitor paths`                     | 显示配置和基线文件路径                         |
-| `file_monitor files`                     | 显示当前监控的文件列表                         |
-| `file_monitor run`                       | 启动守护进程                                   |
-| `file_monitor run -v`                    | 启动（详细日志）                               |
+| 命令                           | 说明                                 |
+| ------------------------------ | ------------------------------------ |
+| `fm init`                      | 生成配置文件模板 `~/.fm/config.toml` |
+| `fm add -r "email"`            | 添加收件人                           |
+| `fm add -f "/path/to/file"`    | 添加监控文件                         |
+| `fm remove -r "email"`         | 移除收件人                           |
+| `fm remove -f "/path/to/file"` | 移除监控文件                         |
+| `fm interval 60`               | 设置轮询间隔（秒）                   |
+| `fm paths`                     | 显示配置和基线文件路径               |
+| `fm files`                     | 显示当前监控的文件列表               |
+| `fm run`                       | 启动守护进程                         |
+| `fm run -v`                    | 启动（详细日志）                     |
 
 ## 项目结构
 
@@ -71,9 +71,9 @@ tests/
 
 ## 配置文件
 
-`~/.file_monitor/config.toml`：
+`~/.fm/config.toml`：
 
-```toml
+```**toml**
 [smtp]
 host = "smtp.qq.com"
 port = 465
@@ -114,7 +114,7 @@ HTML 格式邮件，包含纯文本降级。启动、告警、退出三种邮件
 
 ## 安全
 
-`init` 命令自动设置安全权限：
+`fm init` 命令自动设置安全权限：
 
 ```
 drwx------  .file_monitor/          # 700
