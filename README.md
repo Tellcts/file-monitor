@@ -117,9 +117,9 @@ HTML 格式邮件，包含纯文本降级。启动、告警、退出三种邮件
 `fm init` 命令自动设置安全权限：
 
 ```
-drwx------  .file_monitor/          # 700
--rw-------  .file_monitor/config.toml  # 600
--rw-------  .file_monitor/store.json   # 600
+drwx------  ~/.file_monitor/          # 700
+-rw-------  ~/.file_monitor/config.toml  # 600
+-rw-------  ~/.file_monitor/store.json   # 600
 ```
 
 ## 构建要求
